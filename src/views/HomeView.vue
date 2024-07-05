@@ -1,6 +1,7 @@
 <script setup>
 import Input from '@/components/global/Input.vue';
 import Label from '@/components/global/Label.vue';
+import axios from 'axios';
 import { ref, reactive, computed } from 'vue';
 
 const inputInfo = [
@@ -52,27 +53,39 @@ const inputInfo = [
     type: 'text',
     placeholder: 'Informe seu bairro',
   },
-    {
+  {
     id: 'rua',
     text_label: 'Rua',
     type: 'text',
     placeholder: 'Informe sua rua',
   },
-    {
+  {
     id: 'numero',
     text_label: 'Número',
     type: 'text',
     placeholder: 'Informe seu número',
   },
-    {
+  {
     id: 'cep',
     text_label: 'CEP',
     type: 'text',
     placeholder: 'Informe seu CEP',
   },
+  {
+    id: 'hobbie',
+    text_label: 'Hobbie',
+    type: 'text',
+    placeholder: 'Escreva um hobbie que você gosta',
+  },
+  {
+    id: 'biografia',
+    text_label: 'Biografia',
+    type: 'textarea',
+    placeholder: 'Escreva uma pequena biografia sua.'
+  }
 ]
 
-const estados = [
+const states = [
   { uf: 'AC', name: 'Acre' },
   { uf: 'AL', name: 'Alagoas' },
   { uf: 'AP', name: 'Amapá' },
@@ -107,8 +120,8 @@ const signInForm = reactive({
   email: '',
   senha: '',
   data_nascimento: '',
-  estado: '',
-  cidade: '',
+  estado: 'Selecione um estado',
+  cidade: 'Selecione uma cidade',
   bairro: '',
   rua: '',
   numero: '',
@@ -118,7 +131,9 @@ const signInForm = reactive({
   biografia: ''
 });
 
-const senhaConfirmada = reactive({senha: '', validacao: false})
+const listaCidades = ref([])
+
+const senhaConfirmada = reactive({senha: '', validacao: false});
 
 function updateInput(value) {
   if (value.id == 'confirmacao-senha') {
@@ -126,27 +141,48 @@ function updateInput(value) {
     console.log(senhaConfirmada)
   }
   signInForm[value.id] = value.valor
+};
+
+async function searchCities() {
+  const { data } = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${signInForm.estado}/municipios`);
+  listaCidades.value = data;
+  console.log(listaCidades.value)
 }
 </script>
 
 <template>
   <div class="main-container">
     <div class="container-description">
-      <h1>Cadastrar-se</h1>
+      <h1 class="title">Cadastrar-se</h1>
+      <h2 class="subtitle">Preencha os campos abaixo para que ganhe pontos do professor Eduardo :)</h2>
     </div>
       <div class="container-of-container-form">
         <div class="container-form">
-          <form action="" class="form_cadastro">
+          <form class="form_cadastro">
             <div class="container-inputs" v-for="(input, index) in inputInfo" :key="index">
-              <div class="excessao" v-if="index === 5">
-                <select name="estado" id="estado" v-if="index === 5">
-                  <option v-for="(estado, index) in estados" :key="index" value="estado.uf">{{ estado.name }}</option>
+              <div class="exception" v-if="index === 5">
+                <Label :forId="inputInfo[5].id" :text="inputInfo[5].text_label" />
+                <select name="estado" id="estado" v-model="signInForm.estado" @change="searchCities()">
+                  <option disabled value="Selecione um estado">Selecione um estado</option>
+                  <option v-for="(state, index) in states" :key="index" :value="state.uf">{{ state.name }}</option>
                 </select>
               </div>
-                <div class="normal" v-else>
-                  <Label :forId="input.id" :text="input.text_label" />
-                  <Input :type="input.type" :placeholder="input.placeholder" :idInput="input.id" @updateInput="updateInput" />
-                </div>
+
+              <div class="exception" v-else-if="index === 6">
+                <Label :forId="inputInfo[6].id" :text="inputInfo[6].text_label" />
+                <select name="cidade" id="cidade" v-model="signInForm.cidade">
+                  <option disabled value="Selecione uma cidade">Selecione uma cidade</option>
+                  <option v-for="(cidade, index) in listaCidades" :key="index" :value="cidade.nome">{{ cidade.nome }}</option>
+                </select>
+              </div>
+
+              <div class="normal" v-else>
+                <Label :forId="input.id" :text="input.text_label" />
+                <Input :type="input.type" :placeholder="input.placeholder" :idInput="input.id" @updateInput="updateInput" />
+              </div>
+            </div>
+            <div class="buttonSignIn">
+              <button type="submit">Cadastrar-se</button>
             </div>
           </form>
         </div>
@@ -164,13 +200,28 @@ function updateInput(value) {
 
 .container-description {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   height: 45%;
   background: rgb(2,0,36);
   background: linear-gradient(160deg, rgba(2,0,36,1) 0%, rgba(37,165,247,1) 0%, rgba(16,16,199,1) 100%);
 }
 
 .title {
-  color: #a1adb1;
+  margin-top: 50px;
+  font-size: 2.5rem;
+  color: #FDFDFD;
+}
+
+.subtitle {
+  width: 700px;
+  line-height: 1.5em;
+  letter-spacing: 0.05em;
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: center;
+  color: #fcf2f2;
 }
 
 .container-of-container-form {
@@ -178,12 +229,13 @@ function updateInput(value) {
   display: grid;
   justify-items: center;
   bottom: 100px;
+  /* background-color: #f1f1f1; */
 }
 
 .container-form {
   display: flex;
   justify-content: center;
-  width: 75%;
+  width: 40%;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
@@ -191,10 +243,41 @@ function updateInput(value) {
 
 .form_cadastro {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   column-gap: 35px;
+  row-gap: 20px;
   width: 100%;
   height: 85%;
   padding: 60px 60px 60px 60px;
+}
+
+#estado, #cidade {
+  width: 300px;
+  padding: 10px 20px 10px 20px;
+  outline: none;
+  font-size: 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  color: #4d4c4c;
+}
+
+.buttonSignIn {
+  margin-top: 20px;
+}
+
+.buttonSignIn > button {
+  width: 250px;
+  padding: 20px;
+  color: #FFF;
+  font-size: 1rem;
+  font-weight: bold;
+  background: rgb(2,0,36);
+  background: linear-gradient(160deg, rgba(2,0,36,1) 0%, rgba(37,165,247,1) 0%, rgba(16,16,199,1) 100%);
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
 }
 </style>

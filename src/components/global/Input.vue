@@ -33,7 +33,8 @@ console.log(props);
 </script>
 
 <template>
-    <input :type="props.type" :placeholder="props.placeholder" :id="props.idInput" v-model="value.valor" @input="sendValue">
+    <textarea v-if="props.type === 'textarea'" name="biografia" id="biografia" cols="30" rows="10" :placeholder="props.placeholder"></textarea>
+    <input v-else :type="props.type" :placeholder="props.placeholder" :id="props.idInput" v-model="value.valor" @input="sendValue">
 </template>
 
 <style scoped>
@@ -51,5 +52,17 @@ input::placeholder {
     position: relative;
     font-size: 16px;
     bottom: 1px;
+}
+
+#biografia {
+    width: 630px;
+    padding: 15px 20px 0 20px;
+    font-size: 1.1rem;
+    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    color: #4d4c4c;
 }
 </style>
