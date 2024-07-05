@@ -21,7 +21,7 @@ const inputInfo = [
     id: 'senha',
     text_label: 'Senha',
     type: 'password',
-    placeholder: 'Senha1234!'
+    placeholder: 'Senha1234@'
   },
   {
     id: 'confirmacao-senha',
@@ -78,11 +78,17 @@ const inputInfo = [
     placeholder: 'Escreva um hobbie que você gosta'
   },
   {
+    id: 'linguagem',
+    text_label: 'Linguagem de Programação',
+    type: 'text',
+    placeholder: 'Escreva sua linguagem de programação favorita'
+  },
+  {
     id: 'biografia',
     text_label: 'Biografia',
     type: 'textarea',
     placeholder: 'Escreva uma pequena biografia sua.'
-  }
+  },
 ]
 
 const states = [
