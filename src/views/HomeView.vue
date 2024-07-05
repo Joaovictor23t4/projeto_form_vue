@@ -1,81 +1,81 @@
 <script setup>
-import Input from '@/components/global/Input.vue';
-import Label from '@/components/global/Label.vue';
-import axios from 'axios';
-import { ref, reactive, computed } from 'vue';
+import Input from '@/components/global/Input.vue'
+import Label from '@/components/global/Label.vue'
+import axios from 'axios'
+import { ref, reactive, computed } from 'vue'
 
 const inputInfo = [
   {
     id: 'nome',
     text_label: 'Seu nome',
     type: 'text',
-    placeholder: 'Escreva seu nome',
+    placeholder: 'Escreva seu nome'
   },
-    {
+  {
     id: 'email',
     text_label: 'Email',
     type: 'email',
-    placeholder: 'email@example.com',
+    placeholder: 'email@example.com'
   },
-    {
+  {
     id: 'senha',
     text_label: 'Senha',
     type: 'password',
-    placeholder: 'Senha1234!',
+    placeholder: 'Senha1234!'
   },
   {
     id: 'confirmacao-senha',
     text_label: 'Confirmar senha',
     type: 'password',
-    placeholder: 'Repita sua senha',
+    placeholder: 'Repita sua senha'
   },
   {
     id: 'data_nascimento',
     text_label: 'Data de nascimento',
     type: 'date',
-    placeholder: '',
+    placeholder: ''
   },
   {
     id: 'estado',
     text_label: 'Estado',
     type: 'text',
-    placeholder: 'Informe seu estado',
+    placeholder: 'Informe seu estado'
   },
   {
     id: 'cidade',
     text_label: 'Cidade',
     type: 'text',
-    placeholder: 'Informe sua cidade',
+    placeholder: 'Informe sua cidade'
   },
   {
     id: 'bairro',
     text_label: 'Bairro',
     type: 'text',
-    placeholder: 'Informe seu bairro',
+    placeholder: 'Informe seu bairro'
   },
   {
     id: 'rua',
     text_label: 'Rua',
     type: 'text',
-    placeholder: 'Informe sua rua',
+    placeholder: 'Informe sua rua'
   },
   {
     id: 'numero',
     text_label: 'Número',
     type: 'text',
-    placeholder: 'Informe seu número',
+    placeholder: 'Informe seu número'
   },
   {
     id: 'cep',
     text_label: 'CEP',
     type: 'text',
-    placeholder: 'Informe seu CEP',
+    placeholder: 'Informe seu CEP'
   },
   {
     id: 'hobbie',
     text_label: 'Hobbie',
     type: 'text',
-    placeholder: 'Escreva um hobbie que você gosta',
+    placeholder: 'Escreva um hobbie que você gosta'
   },
   {
     id: 'biografia',
@@ -129,11 +129,9 @@ const signInForm = reactive({
   hobbies: '',
   linguagem_programacao: '',
   biografia: ''
-});
+})
 
 const listaCidades = ref([])
-
-const senhaConfirmada = reactive({senha: '', validacao: false});
 
 function updateInput(value) {
   if (value.id == 'confirmacao-senha') {
@@ -141,11 +139,13 @@ function updateInput(value) {
     console.log(senhaConfirmada)
   }
   signInForm[value.id] = value.valor
-};
+}
 
 async function searchCities() {
-  const { data } = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${signInForm.estado}/municipios`);
-  listaCidades.value = data;
+  const { data } = await axios.get(
+    `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${signInForm.estado}/municipios`
+  )
+  listaCidades.value = data
   console.log(listaCidades.value)
 }
 </script>
@@ -154,39 +154,55 @@ async function searchCities() {
   <div class="main-container">
     <div class="container-description">
       <h1 class="title">Cadastrar-se</h1>
-      <h2 class="subtitle">Preencha os campos abaixo para que ganhe pontos do professor Eduardo :)</h2>
+      <h2 class="subtitle">
+        Preencha os campos abaixo para que eu ganhe pontos do professor Eduardo :)
+      </h2>
     </div>
-      <div class="container-of-container-form">
-        <div class="container-form">
-          <form class="form_cadastro">
-            <div class="container-inputs" v-for="(input, index) in inputInfo" :key="index">
-              <div class="exception" v-if="index === 5">
-                <Label :forId="inputInfo[5].id" :text="inputInfo[5].text_label" />
-                <select name="estado" id="estado" v-model="signInForm.estado" @change="searchCities()">
-                  <option disabled value="Selecione um estado">Selecione um estado</option>
-                  <option v-for="(state, index) in states" :key="index" :value="state.uf">{{ state.name }}</option>
-                </select>
-              </div>
-
-              <div class="exception" v-else-if="index === 6">
-                <Label :forId="inputInfo[6].id" :text="inputInfo[6].text_label" />
-                <select name="cidade" id="cidade" v-model="signInForm.cidade">
-                  <option disabled value="Selecione uma cidade">Selecione uma cidade</option>
-                  <option v-for="(cidade, index) in listaCidades" :key="index" :value="cidade.nome">{{ cidade.nome }}</option>
-                </select>
-              </div>
-
-              <div class="normal" v-else>
-                <Label :forId="input.id" :text="input.text_label" />
-                <Input :type="input.type" :placeholder="input.placeholder" :idInput="input.id" @updateInput="updateInput" />
-              </div>
+    <div class="container-of-container-form">
+      <div class="container-form">
+        <form class="form_cadastro">
+          <div class="container-inputs" v-for="(input, index) in inputInfo" :key="index">
+            <div class="exception" v-if="index === 5">
+              <Label :forId="inputInfo[5].id" :text="inputInfo[5].text_label" />
+              <select
+                name="estado"
+                id="estado"
+                v-model="signInForm.estado"
+                @change="searchCities()"
+              >
+                <option disabled value="Selecione um estado">Selecione um estado</option>
+                <option v-for="(state, index) in states" :key="index" :value="state.uf">
+                  {{ state.name }}
+                </option>
+              </select>
             </div>
-            <div class="buttonSignIn">
-              <button type="submit">Cadastrar-se</button>
+
+            <div class="exception" v-else-if="index === 6">
+              <Label :forId="inputInfo[6].id" :text="inputInfo[6].text_label" />
+              <select name="cidade" id="cidade" v-model="signInForm.cidade">
+                <option disabled value="Selecione uma cidade">Selecione uma cidade</option>
+                <option v-for="(cidade, index) in listaCidades" :key="index" :value="cidade.nome">
+                  {{ cidade.nome }}
+                </option>
+              </select>
             </div>
-          </form>
-        </div>
+
+            <div class="normal" v-else>
+              <Label :forId="input.id" :text="input.text_label" />
+              <Input
+                :type="input.type"
+                :placeholder="input.placeholder"
+                :idInput="input.id"
+                @updateInput="updateInput"
+              />
+            </div>
+          </div>
+          <div class="buttonSignIn">
+            <button type="submit">Cadastrar-se</button>
+          </div>
+        </form>
       </div>
+    </div>
   </div>
 </template>
 
@@ -203,14 +219,19 @@ async function searchCities() {
   flex-direction: column;
   align-items: center;
   height: 45%;
-  background: rgb(2,0,36);
-  background: linear-gradient(160deg, rgba(2,0,36,1) 0%, rgba(37,165,247,1) 0%, rgba(16,16,199,1) 100%);
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    160deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(37, 165, 247, 1) 0%,
+    rgba(16, 16, 199, 1) 100%
+  );
 }
 
 .title {
   margin-top: 50px;
   font-size: 2.5rem;
-  color: #FDFDFD;
+  color: #fdfdfd;
 }
 
 .subtitle {
@@ -252,7 +273,8 @@ async function searchCities() {
   padding: 60px 60px 60px 60px;
 }
 
-#estado, #cidade {
+#estado,
+#cidade {
   width: 300px;
   padding: 10px 20px 10px 20px;
   outline: none;
@@ -270,14 +292,26 @@ async function searchCities() {
 .buttonSignIn > button {
   width: 250px;
   padding: 20px;
-  color: #FFF;
+  color: #fff;
   font-size: 1rem;
   font-weight: bold;
-  background: rgb(2,0,36);
-  background: linear-gradient(160deg, rgba(2,0,36,1) 0%, rgba(37,165,247,1) 0%, rgba(16,16,199,1) 100%);
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    160deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(37, 165, 247, 1) 0%,
+    rgba(16, 16, 199, 1) 100%
+  );
   border: none;
   border-radius: 3px;
   outline: none;
   cursor: pointer;
+}
+
+@media (max-width: 1600px) {
+  .container-form {
+    width: 50%;
+    margin-bottom: 30px;
+  }
 }
 </style>
