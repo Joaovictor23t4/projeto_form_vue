@@ -6,7 +6,6 @@ import MostrarDados from '@/components/MostrarDados.vue';
 import axios from 'axios';
 import { useValidationStore } from '@/stores/validation.js';
 import { ref, reactive } from 'vue';
-import { useRoute } from 'vue-router';
 
 const useValidation = useValidationStore();
 
