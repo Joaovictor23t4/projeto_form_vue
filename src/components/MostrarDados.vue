@@ -15,7 +15,6 @@ console.log(props.dados);
 
 <template>
     <div class="container-dados">
-        <img :src="urlPhoto" alt="">
         <p><strong>Nome:</strong> {{ props.dados.nome }}</p>
         <p><strong>Email:</strong> {{ props.dados.email }}</p>
         <p><strong>Senha:</strong> {{ props.dados.senha }}</p>
