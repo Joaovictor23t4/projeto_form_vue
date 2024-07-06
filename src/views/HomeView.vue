@@ -1,8 +1,11 @@
 <script setup>
-import Input from '@/components/global/Input.vue'
-import Label from '@/components/global/Label.vue'
-import axios from 'axios'
-import { ref, reactive, computed } from 'vue'
+import Input from '@/components/global/Input.vue';
+import Label from '@/components/global/Label.vue';
+import axios from 'axios';
+import { useValidationStore } from '@/stores/validation.js';
+import { ref, reactive, computed } from 'vue';
+
+const useValidation = useValidationStore();
 
 const inputInfo = [
   {
@@ -137,14 +140,22 @@ const signInForm = reactive({
   biografia: ''
 })
 
-const listaCidades = ref([])
+const listaCidades = ref([]);
+const senhaConfirmada = ref('');
 
 function updateInput(value) {
   if (value.id == 'confirmacao-senha') {
-    senhaConfirmada.senha = value.valor
-    console.log(senhaConfirmada)
+    senhaConfirmada.value = value.valor
   }
   signInForm[value.id] = value.valor
+}
+
+function confirmarSenha() {
+  if (signInForm.senha === senhaConfirmada.value) {
+    useValidation.validations.senha = true;
+  } else {
+    useValidation.validations.senha = false;
+  }
 }
 
 async function searchCities() {
@@ -152,7 +163,6 @@ async function searchCities() {
     `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${signInForm.estado}/municipios`
   )
   listaCidades.value = data
-  console.log(listaCidades.value)
 }
 </script>
 
@@ -200,6 +210,7 @@ async function searchCities() {
                 :placeholder="input.placeholder"
                 :idInput="input.id"
                 @updateInput="updateInput"
+                @confirmarSenha="confirmarSenha"
               />
             </div>
           </div>

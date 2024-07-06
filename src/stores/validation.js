@@ -6,6 +6,7 @@ export const useValidationStore = defineStore('validation', () => {
     nome: false,
     email: false,
     senha: false,
+    confirmar_senha: false,
     data_nascimento: false,
     estado: false,
     cidade: false,
@@ -17,28 +18,44 @@ export const useValidationStore = defineStore('validation', () => {
     biografia: false
   })
 
-  function validarSomenteLetras(id, value) {
-    const regex = /^[a-zA-Z]+$/;
+  const validarSomenteLetras = (id, value) => {
+    const regex = /^[À-Úà-ú\w ]+$/;
     validations[id] = regex.test(value);
-    return validations[id];
+    if (validations[id]) {
+      return {status: validations[id]};
+    } else {
+      return {status: false, message: 'Este campo deve conter somente letras!'};
+    }
   }
 
-  function validarEmail(email) {
+  const validarEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     validations.email = regex.test(email);
-    return validations.email;
+    if (validations.email) {
+      return {status: validations.email};
+    } else {
+      return {status: false, message: 'Você deve inserir um email válido!'};
+    }
   }
 
-  function validarSenha(senha) {
-    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{20,}$/;
+  const validarSenha = (senha) => {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
     validations.senha = regex.test(senha);
-    return validations.senha;
+    if (validations.senha) {
+      return {status: validations.senha}
+    } else {
+      return {status: validations.senha};
+    }
   }
 
-  function validarNumero(numero) {
+  const validarNumero = (id, numero) => {
     const regex = /^\d+$/;
-    validations.numero = regex.test(numero);
-    return validations.numero;
+    validations[id] = regex.test(numero);
+    if (validations[id]) {
+      return {status: validations[id]};
+    } else {
+      return {status: false, message: 'Este campo deve conter apenas números'}
+    }
   }
 
   return { validations, validarSomenteLetras, validarSenha, validarNumero, validarEmail }
