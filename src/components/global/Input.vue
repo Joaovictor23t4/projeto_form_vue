@@ -62,7 +62,7 @@ function sendValue() {
 <template>
     <textarea v-if="props.type === 'textarea'" name="biografia" id="biografia" cols="30" rows="10" v-model="value.valor" @input="sendValue" @blur="validar('biografia', value.valor)" :placeholder="props.placeholder" :style="statusValidacao.status === 'Não definido' ? '' : statusValidacao.status === true ? 'border: 1px solid green;' : 'border: 1px solid red;'"></textarea>
     <input v-else :type="props.type" :placeholder="props.placeholder" :id="props.idInput" v-model="value.valor" @input="sendValue" @blur="validar(props.idInput, value.valor)" class="input_default" :style="statusValidacao.status === 'Não definido' ? '' : statusValidacao.status === true ? 'border: 1px solid green;' : 'border: 1px solid red;'">
-    <p v-if="useValidation.validations.senha === false && props.idInput == 'senha'" class="alertMessage">Este campo deve conter 20 dígitos, 1 letra Maiúscula, 1 letra minúscula, 1 número e 1 caractere especial</p>
+    <p v-if="useValidation.validations.senha === false && props.idInput == 'senha'" class="alertMessage">Este campo deve conter 10 dígitos, 1 letra Maiúscula, 1 letra minúscula, 1 número e 1 caractere especial</p>
     <p v-else-if="statusValidacao.status === false" class="alertMessage">{{ statusValidacao.message }}</p>
 </template>
 
