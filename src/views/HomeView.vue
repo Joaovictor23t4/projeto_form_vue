@@ -153,11 +153,10 @@ const listaCidades = ref([]);
 const senhaConfirmada = ref('');
 
 function updateInput(value) {
-  if (value.id == 'confirmacao-senha') {
-    senhaConfirmada.value = value.valor
+  if (value.id == 'confirmacao_senha') {
+    senhaConfirmada.value = value.valor;
   }
   signInForm[value.id] = value.valor
-  console.log(signInForm[value.id]);
 }
 
 function validarEstadoCidade(id) {
@@ -167,11 +166,12 @@ function validarEstadoCidade(id) {
 
 function confirmarSenha() {
   if (signInForm.senha === senhaConfirmada.value) {
-    useValidation.validations.senha = true;
-    useValidation.validations.confirmar_senha = true;
+    useValidation.validations.confirmacao_senha = true;
+    useValidation.state.messageConfirmPassword = 'Não definido';
   } else {
-    useValidation.validations.senha = false;
-    useValidation.validations.confirmar_senha = false;
+    console.log('Senhas desiguais')
+    useValidation.validations.confirmacao_senha = false;
+    useValidation.state.messageConfirmPassword = 'As senhas precisam ser iguais!';
   }
 }
 
@@ -184,6 +184,7 @@ async function searchCities() {
 
 function validacaoSubmit() {
   for (let campo of inputInfo) {
+    console.log(useValidation.validations[campo.id])
     if (useValidation.validations[campo.id] === false) {
       console.log(campo);
       return false;
