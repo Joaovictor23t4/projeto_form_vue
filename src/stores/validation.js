@@ -3,6 +3,7 @@ import { reactive } from 'vue'
 
 export const useValidationStore = defineStore('validation', () => {
   const state = reactive({
+    messageConfirmPassword: 'Não definido',
     isLogged: false,
     isLoading: false,
   })
@@ -10,7 +11,7 @@ export const useValidationStore = defineStore('validation', () => {
     nome: false,
     email: false,
     senha: false,
-    confirmar_senha: false,
+    confirmacao_senha: false,
     data_nascimento: false,
     estado: false,
     cidade: false,
