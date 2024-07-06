@@ -1,9 +1,12 @@
 <script setup>
 import Input from '@/components/global/Input.vue';
 import Label from '@/components/global/Label.vue';
+import Loading from '@/components/Loading.vue';
+import MostrarDados from '@/components/MostrarDados.vue';
 import axios from 'axios';
 import { useValidationStore } from '@/stores/validation.js';
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive } from 'vue';
+import { useRoute } from 'vue-router';
 
 const useValidation = useValidationStore();
 
@@ -27,7 +30,7 @@ const inputInfo = [
     placeholder: 'Senha1234@'
   },
   {
-    id: 'confirmacao-senha',
+    id: 'confirmacao_senha',
     text_label: 'Confirmar senha',
     type: 'password',
     placeholder: 'Repita sua senha'
@@ -79,6 +82,12 @@ const inputInfo = [
     text_label: 'Hobbie',
     type: 'text',
     placeholder: 'Escreva um hobbie que você gosta'
+  },
+  {
+    id: 'github',
+    text_label: 'Github',
+    type: 'text',
+    placeholder: 'Escreva seu usuário do Github'
   },
   {
     id: 'linguagem',
@@ -136,7 +145,8 @@ const signInForm = reactive({
   numero: '',
   cep: '',
   hobbies: '',
-  linguagem_programacao: '',
+  github: '',
+  linguagem: '',
   biografia: ''
 })
 
@@ -148,13 +158,21 @@ function updateInput(value) {
     senhaConfirmada.value = value.valor
   }
   signInForm[value.id] = value.valor
+  console.log(signInForm[value.id]);
+}
+
+function validarEstadoCidade(id) {
+  useValidation.validations[id] = true;
+  console.log(useValidation.validations[id])
 }
 
 function confirmarSenha() {
   if (signInForm.senha === senhaConfirmada.value) {
     useValidation.validations.senha = true;
+    useValidation.validations.confirmar_senha = true;
   } else {
     useValidation.validations.senha = false;
+    useValidation.validations.confirmar_senha = false;
   }
 }
 
@@ -164,19 +182,28 @@ async function searchCities() {
   )
   listaCidades.value = data
 }
+
+function validacaoSubmit() {
+  for (let campo of inputInfo) {
+    if (useValidation.validations[campo.id] === false) {
+      console.log(campo);
+      return false;
+    }
+  }
+  useValidation.state.isLogged = true;
+  useValidation.spinnerLoading();
+}
 </script>
 
 <template>
-  <div class="main-container">
+ <div v-if="useValidation.state.isLoading === false" class="main-container">
     <div class="container-description">
-      <h1 class="title">Cadastrar-se</h1>
-      <h2 class="subtitle">
-        Preencha os campos abaixo para que eu ganhe pontos do professor Eduardo :)
-      </h2>
+      <h1 class="title">{{ useValidation.state.isLogged === true ? 'Obrigado por logar' : 'Cadastrar-se'}}</h1>
+      <h2 class="subtitle">Serei eternamente grato pelo seu cadastro &#10084;</h2>
     </div>
     <div class="container-of-container-form">
-      <div class="container-form">
-        <form class="form_cadastro">
+      <div v-if="useValidation.state.isLogged === false" class="container-form">
+        <form @submit.prevent="validacaoSubmit()" class="form_cadastro">
           <div class="container-inputs" v-for="(input, index) in inputInfo" :key="index">
             <div class="exception" v-if="index === 5">
               <Label :forId="inputInfo[5].id" :text="inputInfo[5].text_label" />
@@ -184,7 +211,7 @@ async function searchCities() {
                 name="estado"
                 id="estado"
                 v-model="signInForm.estado"
-                @change="searchCities()"
+                @change="searchCities(); validarEstadoCidade('estado')"
               >
                 <option disabled value="Selecione um estado">Selecione um estado</option>
                 <option v-for="(state, index) in states" :key="index" :value="state.uf">
@@ -195,7 +222,7 @@ async function searchCities() {
 
             <div class="exception" v-else-if="index === 6">
               <Label :forId="inputInfo[6].id" :text="inputInfo[6].text_label" />
-              <select name="cidade" id="cidade" v-model="signInForm.cidade">
+              <select name="cidade" id="cidade" v-model="signInForm.cidade" @change="validarEstadoCidade('cidade')">
                 <option disabled value="Selecione uma cidade">Selecione uma cidade</option>
                 <option v-for="(cidade, index) in listaCidades" :key="index" :value="cidade.nome">
                   {{ cidade.nome }}
@@ -214,13 +241,16 @@ async function searchCities() {
               />
             </div>
           </div>
-          <div class="buttonSignIn">
-            <button type="submit">Cadastrar-se</button>
-          </div>
+
+          <input type="submit" class="buttonSignIn" value="Cadastrar-se" />
         </form>
+      </div>
+      <div class="container-of-container-dados" v-else>
+        <MostrarDados :dados="(useValidation.state.isLogged) ? signInForm : []" />
       </div>
     </div>
   </div>
+  <Loading v-else />
 </template>
 
 
@@ -231,6 +261,13 @@ async function searchCities() {
   background-color: #f1f1f1;
 }
 
+.container-loader {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .container-description {
   display: flex;
   flex-direction: column;
@@ -303,12 +340,9 @@ async function searchCities() {
 }
 
 .buttonSignIn {
-  margin-top: 20px;
-}
-
-.buttonSignIn > button {
   width: 250px;
   padding: 20px;
+  margin-top: 20px;
   color: #fff;
   font-size: 1rem;
   font-weight: bold;
@@ -323,6 +357,10 @@ async function searchCities() {
   border-radius: 3px;
   outline: none;
   cursor: pointer;
+}
+
+.container-of-container-dados {
+  width: 40%;
 }
 
 @media (max-width: 1600px) {

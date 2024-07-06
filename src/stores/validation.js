@@ -2,6 +2,10 @@ import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
 export const useValidationStore = defineStore('validation', () => {
+  const state = reactive({
+    isLogged: false,
+    isLoading: false,
+  })
   const validations = reactive({
     nome: false,
     email: false,
@@ -16,7 +20,7 @@ export const useValidationStore = defineStore('validation', () => {
     cep: false,
     hobbie: false,
     biografia: false
-  })
+  });
 
   const validarSomenteLetras = (id, value) => {
     const regex = /^[À-Úà-ú\w ]+$/;
@@ -57,6 +61,14 @@ export const useValidationStore = defineStore('validation', () => {
       return {status: false, message: 'Este campo deve conter apenas números'}
     }
   }
+  
+function spinnerLoading() {
+    console.log('Funcionou')
+    state.isLoading = true
+    setTimeout(() => {
+      state.isLoading = false
+    }, 1500)
+  }
 
-  return { validations, validarSomenteLetras, validarSenha, validarNumero, validarEmail }
+  return { state, validations, validarSomenteLetras, validarSenha, validarNumero, validarEmail, spinnerLoading }
 })
